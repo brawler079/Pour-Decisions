@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Question {
+  id      String   @id @default(uuid())
+  text    String
+  options String[] // Array of 3 options
+  answer  String   // The correct answer
+}
+
+
+model GameSession {
+  id        String   @id @default(uuid())
+  players   String[]
+  scores    Json
+  createdAt DateTime @default(now())
+}
