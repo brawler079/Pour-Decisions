@@ -21,3 +21,13 @@ model GameSession {
   scores    Json
   createdAt DateTime @default(now())
 }
+
+model Truth{
+  id     String @id @default(uuid())
+  text   String
+}
+
+model Dare {
+  id     String @id @default(uuid())
+  text   String
+}
