@@ -20,11 +20,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Game session not found" }, { status: 404 });
     }
 
-    // ✅ Clone and update the scores object
-    const updatedScores: Record<string, number> = gameSession.scores
-      ? { ...gameSession.scores }
+    // ✅ Ensure scores is an object (Prisma stores JSON as `any`)
+    const existingScores = typeof gameSession.scores === "object" && gameSession.scores !== null
+      ? gameSession.scores as Record<string, number>
       : {};
 
+    // ✅ Clone and update the scores object safely
+    const updatedScores: Record<string, number> = { ...existingScores };
     updatedScores[player] = (updatedScores[player] || 0) + points;
 
     // ✅ Update the game session in the database

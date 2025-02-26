@@ -13,7 +13,7 @@ export default function GlitchText({ children, className = "" }: GlitchTextProps
 
   useEffect(() => {
     if (typeof children !== "string") return; // Ensure it's a string before glitch effect
-
+  
     const glitchInterval = setInterval(() => {
       if (Math.random() < 0.1) {
         setGlitchText(
@@ -25,9 +25,10 @@ export default function GlitchText({ children, className = "" }: GlitchTextProps
         setTimeout(() => setGlitchText(text), 100);
       }
     }, 100);
-
+  
     return () => clearInterval(glitchInterval);
-  }, [text]);
+  }, [children, text]); // ✅ Added 'children' to dependency array
+  
 
   return (
     <span

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server"; // Import NextRequest
 
 const prisma = new PrismaClient();
 
-export async function POST(req: any) {
+export async function POST(req: NextRequest) { // Use NextRequest instead of any
   try {
     const { players } = await req.json(); // Get player names from request
     if (!players || !Array.isArray(players) || players.length === 0) {
@@ -11,7 +12,7 @@ export async function POST(req: any) {
     }
 
     // Initialize scores for each player with 0
-    const scores = players.reduce((acc, player) => {
+    const scores = players.reduce((acc: Record<string, number>, player: string) => {
       acc[player] = 0;
       return acc;
     }, {});

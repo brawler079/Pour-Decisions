@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const correctAnswer = question.answer;
-    let penalty = answer !== correctAnswer; // ✅ Set penalty only if answer is wrong
+    const penalty = answer !== correctAnswer; // ✅ Set penalty only if answer is wrong
 
     // ✅ Clone scores object to update safely
     const updatedScores: Record<string, number> = gameSession.scores
