@@ -20,9 +20,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Game session not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, gameSession });
+    const players = gameSession.players ?? []; // ✅ Ensure it's always an array
+
+    return NextResponse.json({ success: true, players });
   } catch (error) {
-    console.error("Error fetching game session:", error);
+    console.error("❌ Error fetching session:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

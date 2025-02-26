@@ -11,54 +11,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // ✅ Fetch the current game session
-    const gameSession = await prisma.gameSession.findUnique({
-      where: { id: gameSessionId },
-    });
-
+    // ✅ Fetch the game session
+    const gameSession = await prisma.gameSession.findUnique({ where: { id: gameSessionId } });
     if (!gameSession) {
       return NextResponse.json({ error: "Game session not found" }, { status: 404 });
     }
 
-    // ✅ Fetch the correct question
-    const question = await prisma.question.findUnique({
-      where: { id: questionId },
-    });
-
+    // ✅ Fetch the exact question
+    const question = await prisma.question.findUnique({ where: { id: questionId } });
     if (!question) {
       return NextResponse.json({ error: "Question not found" }, { status: 500 });
     }
 
     const correctAnswer = question.answer;
+    let penalty = answer !== correctAnswer; // ✅ Set penalty only if answer is wrong
+
+    // ✅ Clone scores object to update safely
     const updatedScores: Record<string, number> = gameSession.scores
       ? { ...(gameSession.scores as Record<string, number>) }
       : {};
 
-    let penalty = false;
-    if (answer === correctAnswer) {
-      updatedScores[player] = (updatedScores[player] || 0) + 10;
-    } else {
-      penalty = true;
+    if (!penalty) {
+      updatedScores[player] = (updatedScores[player] || 0) + 10; // ✅ Add points only if correct
     }
 
-    // ✅ Update the scores
+    // ✅ Update scores in database
     await prisma.gameSession.update({
       where: { id: gameSessionId },
       data: { scores: updatedScores },
     });
 
-    if (penalty) {
-      return NextResponse.json({
-        success: true,
-        penalty: true,
-        message: "Wrong answer! Choose Truth or Dare.",
-        scores: updatedScores,
-      });
-    }
-
     return NextResponse.json({
       success: true,
-      message: "Correct answer recorded",
+      penalty, // ✅ Send penalty status to frontend
+      message: penalty ? "Wrong answer! Choose Truth or Dare." : "Correct answer recorded",
       scores: updatedScores,
     });
   } catch (error) {
